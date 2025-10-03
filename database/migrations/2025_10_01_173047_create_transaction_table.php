@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transaction', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('tsn_id');
+            $table->unsignedBigInteger('tsn_usr_id');
+            $table->string('tsn_csm_name');
+            $table->string('tsn_date');
+            $table->enum('tsn_metode', ['tunai', 'non-tunai']);
+            $table->decimal('tsn_total');
             $table->timestamps();
         });
     }
