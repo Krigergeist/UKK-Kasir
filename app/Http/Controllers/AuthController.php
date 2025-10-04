@@ -22,7 +22,7 @@ class AuthController extends Controller
         User::create([
             'usr_name'      => $request->usr_name,
             'usr_email'     => $request->usr_email,
-            'usr_password'  => bcrypt($request->usr_password), // penting!
+            'usr_password'  => bcrypt($request->usr_password),
             'usr_shp_name'  => $request->usr_shp_name,
             'usr_phone'     => $request->usr_phone,
         ]);
@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         if (Auth::attempt(['usr_email' => $credentials['usr_email'], 'password' => $credentials['usr_password']], $remember)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/home');
         }
 
         return back()->withErrors([

@@ -37,6 +37,6 @@
 
 <p class="text-center text-gray-600 mt-6">
     Belum punya akun?
-    <a href="{{ route('home') }}" class="text-blue-600 hover:underline">Daftar sekarang</a>
+    <a href="{{ route('register') }}" class="text-blue-600 hover:underline">Daftar sekarang</a>
 </p>
 @endsection

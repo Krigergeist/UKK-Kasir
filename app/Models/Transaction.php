@@ -38,7 +38,7 @@ class Transaction extends Model
     // Relations
     public function user()
     {
-        return $this->belongsTo(User::class, 'tsn_usr_id');
+        return $this->belongsTo(User::class, 'tsn_usr_id', 'usr_id');
     }
 
     public function details()
