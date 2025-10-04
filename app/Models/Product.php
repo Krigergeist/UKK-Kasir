@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+
 
     protected $table = 'products';
     protected $primaryKey = 'prd_id';
@@ -22,7 +22,6 @@ class Product extends Model
         'prd_img',
         'prd_created_by',
         'prd_updated_by',
-        'prd_deleted_by',
         'prd_sys_note',
     ];
 
@@ -34,7 +33,6 @@ class Product extends Model
     protected $dates = [
         'prd_created_at',
         'prd_updated_at',
-        'prd_deleted_at',
     ];
 
     // Relations
