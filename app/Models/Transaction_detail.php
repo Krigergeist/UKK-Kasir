@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction_Detail extends Model
 {
-    use SoftDeletes;
+
 
     protected $table = 'transaction_details';
     protected $primaryKey = 'tsnd_id';
 
     protected $fillable = [
-        'tsn_usr_id',
+        'tsnd_usr_id',
         'tsnd_tsn_id',
-        'tsnd_prod_id',
-        'tsnd_quantity',
-        'tsnd_created_by',
+        'tsnd_prd_id',
+        'tsnd_qty',
+        'created_by',
         'tsnd_updated_by',
         'tsnd_deleted_by',
         'tsnd_sys_note',
@@ -46,6 +46,6 @@ class Transaction_Detail extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'tsn_usr_id');
+        return $this->belongsTo(User::class, 'tsn_usr_id', 'usr_id');
     }
 }

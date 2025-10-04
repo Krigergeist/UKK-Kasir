@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use SoftDeletes;
 
     protected $table = 'transactions';
     protected $primaryKey = 'tsn_id';
@@ -18,7 +17,7 @@ class Transaction extends Model
         'tsn_date',
         'tsn_metode',
         'tsn_total',
-        'tsn_created_by',
+        'created_by',
         'tsn_updated_by',
         'tsn_deleted_by',
         'tsn_sys_note',

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->bigIncrements('tsnd_id');
             $table->unsignedBigInteger('tsnd_tsn_id');
+            $table->unsignedBigInteger('tsnd_usr_id');
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('tsnd_prd_id');
             $table->integer('tsnd_qty');
             $table->timestamps();
