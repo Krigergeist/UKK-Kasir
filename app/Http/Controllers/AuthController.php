@@ -19,15 +19,13 @@ class AuthController extends Controller
     // Proses register
     public function register(Request $request)
     {
-        $request->validate([
-            'usr_name' => 'required|string|max:100',
-            'usr_email' => 'required|email|unique:users,usr_email',
-            'usr_password' => 'required|string|min:6|confirmed',
-            'usr_shp_name' => 'required|string|max:100',
-            'usr_phone' => 'required|string|max:100',
+        User::create([
+            'usr_name'      => $request->usr_name,
+            'usr_email'     => $request->usr_email,
+            'usr_password'  => bcrypt($request->usr_password), // penting!
+            'usr_shp_name'  => $request->usr_shp_name,
+            'usr_phone'     => $request->usr_phone,
         ]);
-
-        User::create($request->all());
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login.');
     }
