@@ -4,26 +4,17 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
     use Notifiable;
 
-    // Nama tabel
     protected $table = 'users';
-
-    // Primary key
     protected $primaryKey = 'usr_id';
-
-    // Jika primary key auto increment dan tipe bigInteger
-    protected $keyType = 'integer';
     public $incrementing = true;
 
-    // Timestamp custom
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
-
-    // Kolom yang bisa diisi
     protected $fillable = [
         'usr_email',
         'usr_password',
@@ -33,14 +24,19 @@ class User extends Authenticatable
         'usr_img',
     ];
 
-    // Hidden (misal password)
-    protected $hidden = [
-        'usr_password',
-    ];
+    protected $hidden = ['usr_password'];
 
-    // Override password untuk hash otomatis
+    public function getAuthPassword()
+    {
+        return $this->usr_password;
+    }
+
     public function setUsrPasswordAttribute($value)
     {
-        $this->attributes['usr_password'] = bcrypt($value);
+        if (is_string($value) && Str::startsWith($value, ['$2y$', '$2a$', '$argon2i$', '$argon2id$'])) {
+            $this->attributes['usr_password'] = $value; // diasumsikan sudah hash valid
+        } else {
+            $this->attributes['usr_password'] = Hash::make($value);
+        }
     }
 }
