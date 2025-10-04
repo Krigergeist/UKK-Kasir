@@ -2,44 +2,45 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Nama tabel
+    protected $table = 'users';
+
+    // Primary key
+    protected $primaryKey = 'usr_id';
+
+    // Jika primary key auto increment dan tipe bigInteger
+    protected $keyType = 'integer';
+    public $incrementing = true;
+
+    // Timestamp custom
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
+
+    // Kolom yang bisa diisi
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'usr_email',
+        'usr_password',
+        'usr_name',
+        'usr_shp_name',
+        'usr_phone',
+        'usr_img',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Hidden (misal password)
     protected $hidden = [
-        'password',
-        'remember_token',
+        'usr_password',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    // Override password untuk hash otomatis
+    public function setUsrPasswordAttribute($value)
+    {
+        $this->attributes['usr_password'] = bcrypt($value);
+    }
 }
