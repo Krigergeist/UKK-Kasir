@@ -8,11 +8,36 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::latest()->paginate(10);
+        $query = Product::query();
+
+        // 🔎 Pencarian by nama/kode/deskripsi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('prd_name', 'like', "%$search%")
+                    ->orWhere('prd_code', 'like', "%$search%")
+                    ->orWhere('prd_description', 'like', "%$search%");
+            });
+        }
+
+        // ⬆⬇ Sorting
+        $allowedSorts = ['prd_code', 'prd_name', 'prd_price', 'prd_stock', 'prd_description'];
+        $sort = $request->get('sort', 'prd_id'); // default id
+        $dir = $request->get('dir', 'asc');
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'prd_id'; // fallback aman
+        }
+
+        $query->orderBy($sort, $dir);
+
+        $products = $query->paginate(10)->appends($request->query());
+
         return view('products.index', compact('products'));
     }
+
 
     public function create()
     {
