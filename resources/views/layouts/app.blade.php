@@ -16,7 +16,7 @@
     <aside id="sidebar"
         class="fixed lg:static top-0 left-0 h-1vh w-64 bg-gradient-to-b from-blue-500 to-indigo-600 text-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40">
         <div class="p-6 mb-8 text-3xl font-bold border-b border-white/20">
-            MyKasir
+            Lediashier
         </div>
         <nav class="p-4 mt-10 space-y-3">
             <a href="{{ route('home') }}"
