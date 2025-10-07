@@ -11,6 +11,7 @@ class Transaction_Detail extends Model
 
     protected $table = 'transaction_details';
     protected $primaryKey = 'tsnd_id';
+    public $timestamps = true;
 
     protected $fillable = [
         'tsnd_usr_id',
@@ -41,7 +42,7 @@ class Transaction_Detail extends Model
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'tsnd_prod_id', 'prd_id');
+        return $this->belongsTo(Product::class, 'tsnd_prd_id', 'prd_id');
     }
 
     public function user()

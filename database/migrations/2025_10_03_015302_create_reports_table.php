@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('report', function (Blueprint $table) {
+        Schema::create('reports', function (Blueprint $table) {
             $table->bigIncrements('rpt_id');
             $table->unsignedBigInteger('rpt_usr_id');
             $table->date('rpt_date');

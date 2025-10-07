@@ -2,73 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Report;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Transaction;
+use App\Models\Transaction_Detail;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reports = Report::latest()->paginate(10);
-        return view('reports.index', compact('reports'));
+        // Filter periode (opsional: tanggal awal dan akhir)
+        $startDate = $request->get('start_date', now()->startOfMonth());
+        $endDate = $request->get('end_date', now()->endOfMonth());
+
+        // 1. Informasi Dasar
+        $transactions = Transaction::with('details.product')
+            ->whereBetween('tsn_date', [$startDate, $endDate])
+            ->latest()
+            ->get();
+
+        // 2. Ringkasan Transaksi
+        $summary = [
+            'total_transactions' => $transactions->count(),
+            'total_sales' => $transactions->sum('tsn_total'),
+            'total_items_sold' => $transactions->sum(function ($t) {
+                return $t->details->sum('tsnd_qty');
+            }),
+            'payment_methods' => $transactions->groupBy('tsn_metode')->map->sum('tsn_total')
+        ];
+
+        // 5. Laporan Produk
+        $products_sold = Transaction_Detail::with('product')
+            ->whereHas('transaction', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('tsn_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        $top_products = Transaction_Detail::with('product')
+            ->whereHas('transaction', function ($q) {
+                $q->whereDate('tsn_date', now());
+            })
+            ->get()
+            ->groupBy('tsnd_prod_id')
+            ->map(function ($group) {
+                $product = $group->first()->product;
+                if (!$product) return null; // skip jika produk sudah dihapus
+                return [
+                    'product_name' => $product->prd_name,
+                    'quantity_sold' => $group->sum('tsnd_qty'),
+                    'product_id' => $product->prd_id
+                ];
+            })
+            ->filter() // buang null
+            ->sortByDesc('quantity_sold')
+            ->take(5);
+
+
+        return view('reports.index', compact('transactions', 'summary', 'top_products', 'startDate', 'endDate'));
     }
 
-    public function create()
+    public function show(Transaction $transaction)
     {
-        return view('reports.create');
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'rpt_date' => 'required|date',
-            'rpt_month' => 'required|integer|min:1|max:12',
-            'rpt_year' => 'required|digits:4',
-        ]);
-
-        Report::create([
-            'rpt_usr_id' => Auth::id(),
-            'rpt_date' => $request->rpt_date,
-            'rpt_month' => $request->rpt_month,
-            'rpt_year' => $request->rpt_year,
-            'rpt_created_by' => Auth::id(),
-        ]);
-
-        return redirect()->route('reports.index')->with('success', 'Report created successfully.');
-    }
-
-    public function show(Report $report)
-    {
-        return view('reports.show', compact('report'));
-    }
-
-    public function edit(Report $report)
-    {
-        return view('reports.edit', compact('report'));
-    }
-
-    public function update(Request $request, Report $report)
-    {
-        $request->validate([
-            'rpt_date' => 'required|date',
-            'rpt_month' => 'required|integer|min:1|max:12',
-            'rpt_year' => 'required|digits:4',
-        ]);
-
-        $report->update([
-            'rpt_date' => $request->rpt_date,
-            'rpt_month' => $request->rpt_month,
-            'rpt_year' => $request->rpt_year,
-            'rpt_updated_by' => Auth::id(),
-        ]);
-
-        return redirect()->route('reports.index')->with('success', 'Report updated successfully.');
-    }
-
-    public function destroy(Report $report)
-    {
-        $report->delete();
-        return redirect()->route('reports.index')->with('success', 'Report deleted successfully.');
+        // Detail transaksi lengkap
+        $transaction->load(['details.product' => function ($q) {
+            $q->whereNotNull('prd_id');
+        }]);;
+        return view('reports.show', compact('transaction'));
     }
 }

@@ -28,6 +28,8 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::middleware(['auth'])->group(function () {
     Route::resource('products', ProductController::class);
-    Route::resource('transactions', \App\Http\Controllers\TransactionController::class);
-    Route::resource('reports', ReportController::class);
+
+    Route::resource('transactions', TransactionController::class);
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/{transaction}', [ReportController::class, 'show'])->name('reports.show');
 });
